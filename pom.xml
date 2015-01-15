@@ -60,7 +60,6 @@
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.11</version>
-			<scope>test</scope>
 		</dependency>
 
 		<dependency>
@@ -148,6 +147,13 @@
 				<version>2.3</version>
 				<configuration>
 					<skip>true</skip>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.7</version>
+				<configuration>
+					<includeEmptyDirs>true</includeEmptyDirs>
 				</configuration>
 			</plugin>
 			<plugin>
