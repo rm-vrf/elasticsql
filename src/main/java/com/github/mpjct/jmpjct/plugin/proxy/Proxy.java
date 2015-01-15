@@ -144,7 +144,7 @@ public class Proxy extends Base {
             case Flags.COM_QUERY:
                 this.logger.trace("COM_QUERY");
                 context.query = Com_Query.loadFromPacket(packet).query;
-                this.logger.info("EXECUTE: " + context.query);
+                this.logger.debug("EXECUTE: " + context.query);
                 break;
             
             default:
