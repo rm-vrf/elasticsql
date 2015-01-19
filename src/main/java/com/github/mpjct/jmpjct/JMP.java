@@ -17,18 +17,12 @@ public class JMP {
     public static Properties config = new Properties();
     
     public static void main(String[] args) throws IOException {
-        //FileInputStream config = new FileInputStream("conf/jmp.properties");
-        //JMP.config.load(config);
-        //config.close();
-    	JMP.config.put("ports", "5050");
-    	//JMP.config.put("logConf", "conf/log.conf");
-    	JMP.config.put("plugins", "com.github.mpjct.jmpjct.plugin.proxy.Proxy");
-    	JMP.config.put("proxyHosts", "5050:127.0.0.1:3306");
-    	JMP.config.put("ehcacheConf", "conf/ehcache.xml");
-    	JMP.config.put("ehcacheCacheName", "MySQL");
+        FileInputStream config = new FileInputStream("conf/jmp.properties");
+        JMP.config.load(config);
+        config.close();
         
         Logger logger = Logger.getLogger("JMP");
-        //PropertyConfigurator.configure(JMP.config.getProperty("logConf").trim());
+        PropertyConfigurator.configure(JMP.config.getProperty("logConf").trim());
         
         String[] ports = JMP.config.getProperty("ports").split(",");
         for (String port: ports) {

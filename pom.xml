@@ -99,6 +99,17 @@
 			<version>4.2.0</version>
 		</dependency>
 		
+		<dependency>
+			<groupId>org.antlr</groupId>
+			<artifactId>antlr</artifactId>
+			<version>3.5.2</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.jsqlparser</groupId>
+			<artifactId>jsqlparser</artifactId>
+			<version>0.8.0</version>
+		</dependency>
+		
 	</dependencies>
 	<build>
 		<finalName>elasticsql</finalName>
@@ -171,7 +182,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>cn.batchfile.getty.Main</mainClass>
+							<mainClass>cn.batchfile.elasticsql.Main</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
