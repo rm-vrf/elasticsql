@@ -10,7 +10,8 @@ public class Main {
     	
     	JMP.config.put("ports", "3306");
     	//JMP.config.put("logConf", "conf/log.conf");
-    	JMP.config.put("plugins", "com.github.mpjct.jmpjct.plugin.proxy.Proxy, cn.batchfile.elasticsql.plugin.ElasticsearchProxy, com.github.mpjct.jmpjct.plugin.debug.Debug");
+    	JMP.config.put("plugins", "cn.batchfile.elasticsql.plugin.ElasticsearchProxy, cn.batchfile.elasticsql.plugin.Dump");
+    	//JMP.config.put("plugins", "com.github.mpjct.jmpjct.plugin.proxy.Proxy, cn.batchfile.elasticsql.plugin.Dump");
     	JMP.config.put("proxyHosts", "3306:127.0.0.1:5050");
     	JMP.config.put("ehcacheConf", "conf/ehcache.xml");
     	JMP.config.put("ehcacheCacheName", "MySQL");

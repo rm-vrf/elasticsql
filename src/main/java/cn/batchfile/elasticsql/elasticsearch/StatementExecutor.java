@@ -1,5 +1,6 @@
 package cn.batchfile.elasticsql.elasticsearch;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -33,9 +34,16 @@ public class StatementExecutor {
 		}
 	}
 	
-	public ResultSet execute(String sql) {
-		
-    	if (StringUtils.equalsIgnoreCase(sql, "SELECT * FROM persons")) {
+	public ResultSet execute(String sql) throws SQLException {
+		if (StringUtils.containsIgnoreCase(sql, "SHOW VARIABLES")
+				|| StringUtils.containsIgnoreCase(sql, "SELECT @@session.auto_increment_increment")
+				|| StringUtils.containsIgnoreCase(sql, "show databases")
+				|| StringUtils.containsIgnoreCase(sql, "SELECT database()")
+				|| StringUtils.containsIgnoreCase(sql, "FROM INFORMATION_SCHEMA.STATISTICS.")
+				|| StringUtils.containsIgnoreCase(sql, "from mysql.")) {
+			
+			return schemaManager.query(sql);
+		} else if (StringUtils.equalsIgnoreCase(sql, "SELECT * FROM persons")) {
             ResultSet rs = new ResultSet();
             
             Column col = new Column("Fake Data");
@@ -44,7 +52,8 @@ public class StatementExecutor {
             Column col2 = new Column("Fake Date");
             rs.addColumn(col2);
             
-            Row row = new Row("1");
+            Row row = new Row();
+            row.addData("1");
             row.addData(new Date().getTime());
             
             rs.addRow(row); 
