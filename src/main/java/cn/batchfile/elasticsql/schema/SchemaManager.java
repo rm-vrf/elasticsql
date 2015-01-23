@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -13,7 +12,6 @@ import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import com.github.mpjct.jmpjct.mysql.proto.Column;
 import com.github.mpjct.jmpjct.mysql.proto.ResultSet;
 import com.github.mpjct.jmpjct.mysql.proto.Row;
 
