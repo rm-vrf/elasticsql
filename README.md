@@ -32,7 +32,7 @@ mysql> create table person {
     ->   birthday datetime,
     ->   grade int
     -> };
-<pre>
+</pre>
 
 现在创建了一张表，并且设置了字段类型和索引模式。现在可以使用SQL向数据表中输入数据：
 
@@ -46,7 +46,7 @@ mysql> insert into person
     ->   (name, title, address, birthday, grade) 
     ->   values 
     ->   ('李四', 'Mr', '潜山路887号', '2002-02-10', 3);
-<pre>
+</pre>
 
 查询数据：
 
