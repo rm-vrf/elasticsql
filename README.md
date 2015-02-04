@@ -4,7 +4,9 @@
 
 IT建设搞了不少年了，积累了大量的数据。要分析这些数据，一般的关系型数据库处理起来很困难。
 
-Elasticsearch是个开源分布式搜索引擎，它的特点有：分布式，零配置，自动发现，索引自动分片，索引副本机制，RESTful风格接口，多数据源，自动搜索负载等。由于他的分布特性，很适合用来做大量数据的保存和搜索，可以用Elasticsearch处理数十亿的数据。更具体的好处就不在这里多说了，看Elasticsearch官网介绍吧：http://www.elasticsearch.org，或者：http://www.elasticsearch.cn。
+Elasticsearch是个开源分布式搜索引擎，它的特点有：分布式，零配置，自动发现，索引自动分片，索引副本机制，RESTful风格接口，多数据源，自动搜索负载等。由于他的分布特性，很适合用来做大量数据的保存和搜索，可以用Elasticsearch处理数十亿的数据。更具体的好处就不在这里多说了，看Elasticsearch官网介绍：http://www.elasticsearch.org
+
+或者：http://www.elasticsearch.cn。
 
 但是Elasticsearch使用和维护与传统的数据库有较大的差异，其RESTful形式的接口提供了很好的编程体验，对于日常数据维护比较难用。Elasticsearch的查询接口使用的是比较独特的DSL（领域专用语言），与关系型数据库的SQL差异很大。
 

@@ -13,4 +13,23 @@ public class Column {
 	public String search_analyzer;
 	public boolean store = true;
 
+	public enum Index {
+		analyzed,
+		not_analyzed,
+		no
+	}
+
+	public enum Type {
+		STRING,
+		FLOAT,
+		DOUBLE,
+		BYTE,
+		SHORT,
+		INTEGER,
+		LONG,
+		DATE,
+		BOOLEAN,
+		BINARY,
+		OBJECT
+	}
 }

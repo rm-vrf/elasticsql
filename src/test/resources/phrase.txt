@@ -1,0 +1,8 @@
+{"index" : { "_index" : "testdb", "_type" : "phrase" } }
+{"phrase": "brown fox"}
+{"index" : { "_index" : "testdb", "_type" : "phrase" } }
+{"phrase": "quick fox here", "insert_time": "2014-08-19T07:09:13.434Z"}
+{"index" : { "_index" : "testdb", "_type" : "phrase" } }
+{"phrase": "fox brown", "insert_time": "2014-08-19T07:09:13.434Z"}
+{"index" : { "_index" : "testdb", "_type" : "phrase" } }
+{"phrase": "quick fox"}
