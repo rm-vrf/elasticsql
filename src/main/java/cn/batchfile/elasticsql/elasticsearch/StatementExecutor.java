@@ -63,7 +63,7 @@ public class StatementExecutor {
 			ret.resultSet = rs;
 		} else {
 			try {
-				sql = "SELECT COUNT(*) FROM testdb/account GROUP BY gender, age";
+				//sql = "SELECT COUNT(*) FROM testdb/account GROUP BY gender, age";
 				//sql = "SELECT * FROM testdb/phrase";
 				SearchResponse response = query(sql);
 				ResultHandler handler = ResultHandlerFactory.create(response);
@@ -80,17 +80,17 @@ public class StatementExecutor {
 					for (Entry<String, Object> entry : map.entrySet()) {
 						Object value = entry.getValue();
 						if (value == null) {
-							row.addData("NULL");
+							row.addData(StringUtils.EMPTY);
 						} else if (value instanceof String) {
 							row.addData((String)value);
 						} else if (value instanceof Integer) { 
-							row.addData((Integer)value);
+							row.addData(String.format("%d", value));
 						} else if (value instanceof Boolean) {
 							row.addData((Boolean)value);
 						} else if (value instanceof Float) {
-							row.addData((Float)value);
+							row.addData(String.format("%f", value));
 						} else if (value instanceof Double) {
-							row.addData((Float)value);
+							row.addData(String.format("%f", value));
 						} else if (value instanceof Long) {
 							row.addData((Long)value);
 						} else {
