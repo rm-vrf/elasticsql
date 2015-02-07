@@ -2,8 +2,6 @@
 
 # env
 JAVA_OPTS=
-PORT=5050
-LOG_LEVEL=INFO
 FILE_ENCODING=UTF-8
 
 # resolve links - $0 may be a softlink
@@ -30,5 +28,3 @@ JAR_FILE=$PRGDIR/elasticsql.jar
 java $JAVA_OPTS -Djava.ext.dirs=$LIB_DIR \
 -Dfile.encoding=$FILE_ENCODING \
 -jar $JAR_FILE \
---port=$PORT \
---log.level=$LOG_LEVEL

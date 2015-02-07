@@ -89,3 +89,8 @@ mysql> select * from person where fulltext(address, '潜山路');
 * Replication Protocol 
 
 以上工作计划中，今年应该能完成。
+
+使用了以下项目的代码，因为要改代码，所以就copy来了：
+
+* https://github.com/NLPchina/elasticsearch-sql
+* https://github.com/MPjct/JMPjct
