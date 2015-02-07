@@ -1,6 +1,7 @@
 package cn.batchfile.elasticsql.elasticsearch;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -12,15 +13,15 @@ import org.elasticsearch.action.search.SearchResponse;
 public class AggregationQueryResultHandler implements ResultHandler {
 	
 	private JSONObject data;
-	private JSONArray flattenBuckets;
+	private List<Map<String, Object>> flattenBuckets;
 
 	public AggregationQueryResultHandler(SearchResponse data) {
 		this.data = JSONObject.fromObject(data.toString());
-		this.flattenBuckets = getRows(null, this.data.getJSONObject("aggregations"), new JSONObject());
+		this.flattenBuckets = getRows(null, this.data.getJSONObject("aggregations"), new HashMap<String, Object>());
 	}
 	
-	private JSONArray getRows(String bucketName, JSONObject bucket, JSONObject additionalColumns) {
-		JSONArray rows = new JSONArray();
+	private List<Map<String, Object>> getRows(String bucketName, JSONObject bucket, Map<String, Object> additionalColumns) {
+		List<Map<String, Object>> rows = new ArrayList<Map<String, Object>>();
 		
 		JSONArray subBuckets = getSubBuckets(bucket);
 		if (subBuckets.size() > 0) {
@@ -28,7 +29,7 @@ public class AggregationQueryResultHandler implements ResultHandler {
 				String subBucketName = subBuckets.getJSONObject(i).getString("bucketName");
 				JSONObject subBucket = subBuckets.getJSONObject(i).getJSONObject("bucket");
 				
-				JSONObject newAdditionalColumns = new JSONObject();
+				Map<String, Object> newAdditionalColumns = new HashMap<String, Object>();
 				// bucket without parents
 				if (bucketName != null) {
 					JSONObject newColumn = new JSONObject();
@@ -36,11 +37,11 @@ public class AggregationQueryResultHandler implements ResultHandler {
 					newAdditionalColumns = extend(newColumn, additionalColumns);
 				}
 				
-				JSONArray newRows = getRows(subBucketName, subBucket, newAdditionalColumns);
+				List<Map<String, Object>> newRows = getRows(subBucketName, subBucket, newAdditionalColumns);
 				merge(rows, newRows);
 			}
 		} else {
-			JSONObject obj = extend(new JSONObject(), additionalColumns);
+			Map<String, Object> obj = extend(new JSONObject(), additionalColumns);
 			if (bucketName != null) {
 				obj.put(bucketName, bucket.get("key"));
 			}
@@ -48,7 +49,7 @@ public class AggregationQueryResultHandler implements ResultHandler {
 			for (Object field : bucket.keySet()) {
 				Object val = bucket.get(field);
 				if (val instanceof JSONObject && ((JSONObject)val).containsKey("value")) {
-					obj.put(field, ((JSONObject)val).get("value"));
+					obj.put(field.toString(), ((JSONObject)val).get("value"));
 				} else {
 					continue;
 				}
@@ -58,19 +59,19 @@ public class AggregationQueryResultHandler implements ResultHandler {
 		return rows;
 	}
 	
-	private void merge(JSONArray array1, JSONArray array2) {
+	private void merge(List<Map<String, Object>> array1, List<Map<String, Object>> array2) {
 		for (int i = 0; i < array2.size(); i ++) {
 			array1.add(array2.get(i));
 		}
 	}
 	
-	private JSONObject extend(JSONObject obj1, JSONObject obj2) {
-		JSONObject ret = new JSONObject();
+	private Map<String, Object> extend(JSONObject obj1, Map<String, Object> obj2) {
+		Map<String, Object> ret = new HashMap<String, Object>();
 		for (Object key : obj1.keySet()) {
-			ret.put(key, obj1.get(key));
+			ret.put(key.toString(), obj1.get(key));
 		}
 		for (Object key : obj2.keySet()) {
-			ret.put(key, obj2.get(key));
+			ret.put(key.toString(), obj2.get(key));
 		}
 		return ret;
 	}
@@ -97,7 +98,7 @@ public class AggregationQueryResultHandler implements ResultHandler {
 	public List<String> getHead() {
 		List<String> head = new ArrayList<String>();
 		for (int i = 0; i < flattenBuckets.size(); i ++) {
-			for (Object key : flattenBuckets.getJSONObject(i).keySet()) {
+			for (Object key : flattenBuckets.get(i).keySet()) {
 				if (!head.contains(key)) {
 					head.add(key.toString());
 				}

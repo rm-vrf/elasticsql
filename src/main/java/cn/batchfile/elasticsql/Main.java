@@ -1,8 +1,13 @@
 package cn.batchfile.elasticsql;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Properties;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.PropertyConfigurator;
 
 import com.github.mpjct.jmpjct.JMP;
 import com.github.mpjct.jmpjct.JMP_Thread;
@@ -10,34 +15,52 @@ import com.github.mpjct.jmpjct.JMP_Thread;
 public class Main {
     public static void main(String[] args) throws IOException {
     	
-    	//JMP.config.put("logConf", "conf/log.conf");
-    	//JMP.config.put("plugins", "com.github.mpjct.jmpjct.plugin.proxy.Proxy, cn.batchfile.elasticsql.plugin.Dump");
-    	//JMP.config.put("proxyHosts", "3306:127.0.0.1:5050");
-    	//JMP.config.put("ehcacheConf", "conf/ehcache.xml");
-    	//JMP.config.put("ehcacheCacheName", "MySQL");
+    	// 从配置文件中加载设置
+    	loadConfig(JMP.config);
     	
-    	//JMP.config.put("schemaUrl", "jdbc:mysql://127.0.0.1:5050/elasticsql_schema?useUnicode=true&characterEncoding=utf-8");
-    	//JMP.config.put("schemaUsername", "root");
-    	//JMP.config.put("schemaPassword", "bitnami");
+    	// 从命令行中加载设置
+    	loadArguments(JMP.config, args);
     	
-        
-        //Logger logger = Logger.getLogger("JMP");
-        //PropertyConfigurator.configure(JMP.config.getProperty("logConf").trim());
-        
-    	//JMP.config.put("plugins", "cn.batchfile.elasticsql.plugin.ElasticsearchProxy, cn.batchfile.elasticsql.plugin.Dump");
+    	// 设置插件
     	JMP.config.put("plugins", "cn.batchfile.elasticsql.plugin.ElasticsearchProxy");
     	
-    	JMP.config.put("ports", "3306");
-    	JMP.config.put("cluster_name", "lu_20150202");
-    	JMP.config.put("transport_address", "localhost:9300");
-    	JMP.config.put("http_address", "localhost:9200");
+    	// 加载日志设置
+    	if (JMP.config.containsKey("log.conf")) {
+    		PropertyConfigurator.configure(JMP.config.getProperty("log.conf").trim());
+    	}
     	
-        String[] ports = JMP.config.getProperty("ports").split(",");
+    	// 启动socket监听端口，提供mysql服务
+        String[] ports = JMP.config.getProperty("socket.port").split(",");
         for (String port: ports) {
         	if (StringUtils.isBlank(port)) {
         		continue;
         	}
-            new JMP_Thread(Integer.parseInt(port.trim())).run();
+        	new Thread(new JMP_Thread(Integer.parseInt(port.trim()))).start();
         }
+        
+        // TODO 启动web服务
+    }
+    
+    private static void loadArguments(Properties properties, String[] args) {
+    	for (String arg : args) {
+    		if (StringUtils.contains(arg, "=") && StringUtils.startsWith(arg, "--")) {
+    			String name = StringUtils.substringBetween(arg, "--", "=");
+    			String value = StringUtils.substringAfterLast(arg, "=");
+    			properties.put(name, value);
+    		}
+    	}
+	}
+
+	private static void loadConfig(Properties properties) throws IOException {
+    	FileInputStream config = null;
+    	try {
+	    	File file = new File("conf/elasticsql.properties");
+	    	if (file.exists()) {
+	        	config = new FileInputStream(file);
+	        	properties.load(config);
+	    	}
+    	} finally {
+    		IOUtils.closeQuietly(config);
+    	}
     }
 }

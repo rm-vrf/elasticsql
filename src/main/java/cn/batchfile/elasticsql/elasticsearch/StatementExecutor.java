@@ -63,8 +63,6 @@ public class StatementExecutor {
 			ret.resultSet = rs;
 		} else {
 			try {
-				//sql = "SELECT COUNT(*) FROM testdb/account GROUP BY gender, age";
-				//sql = "SELECT * FROM testdb/phrase";
 				SearchResponse response = query(sql);
 				ResultHandler handler = ResultHandlerFactory.create(response);
 				
@@ -94,7 +92,6 @@ public class StatementExecutor {
 						} else if (value instanceof Long) {
 							row.addData((Long)value);
 						} else {
-							logger.info("data type: " + value.getClass().getName());
 							row.addData(value.toString());
 						}
 					}
@@ -102,9 +99,11 @@ public class StatementExecutor {
 				}
 				ret.resultSet = rs;
 			} catch (SQLFeatureNotSupportedException e) {
-				throw new ExecuteException(1011, null, e.getMessage(), e);
+				throw new ExecuteException(1011, StringUtils.EMPTY, e.getMessage(), e);
 			} catch (SqlParseException e) {
-				throw new ExecuteException(1012, null, e.getMessage(), e);
+				throw new ExecuteException(1012, StringUtils.EMPTY, e.getMessage(), e);
+			} catch (Exception e) {
+				throw new ExecuteException(1050, StringUtils.EMPTY, e.getMessage(), e);
 			}
 		}
 		return ret;
@@ -112,6 +111,7 @@ public class StatementExecutor {
 	
 	private SearchResponse query(String query) throws SqlParseException, SQLFeatureNotSupportedException, SQLFeatureNotSupportedException {
 		SearchRequestBuilder select = (SearchRequestBuilder)searchDao.explain(query);
+		logger.debug(select);
 		return select.get();
 	}
 	
