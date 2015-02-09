@@ -9,11 +9,13 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.PropertyConfigurator;
 
+import cn.batchfile.elasticsql.server.HttpServer;
+
 import com.github.mpjct.jmpjct.JMP;
 import com.github.mpjct.jmpjct.JMP_Thread;
 
 public class Main {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws NumberFormatException, Exception {
     	
     	// 从配置文件中加载设置
     	loadConfig(JMP.config);
@@ -38,7 +40,9 @@ public class Main {
         	new Thread(new JMP_Thread(Integer.parseInt(port.trim()))).start();
         }
         
-        // TODO 启动web服务
+        // 启动web服务
+        String webapp = JMP.config.getProperty("webapp");
+        new HttpServer().start(Integer.parseInt(JMP.config.getProperty("http.port")), webapp);
     }
     
     private static void loadArguments(Properties properties, String[] args) {
