@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import net.sf.json.JSONObject;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.elasticsearch.action.search.SearchRequestBuilder;
@@ -21,16 +23,19 @@ import com.github.mpjct.jmpjct.mysql.proto.ResultSet;
 import com.github.mpjct.jmpjct.mysql.proto.Row;
 
 import cn.batchfile.elasticsql.exceptions.ExecuteException;
+import cn.batchfile.elasticsql.util.Rest;
 
 public class StatementExecutor {
 	
 	private static final Logger logger = Logger.getLogger("StatementExecutor");
 	private SearchDao searchDao;
 
-	public void connect(String clusterName, String httpAddress, String transportAddress) {
+	public void connect(String httpAddress, String transportAddress) {
+		String cluster_name = getClusterName(httpAddress.split(","));
+		
 		Settings settings = ImmutableSettings.settingsBuilder()
 				.put("client.transport.sniff", true)
-				.put("cluster.name", clusterName).build();
+				.put("cluster.name", cluster_name).build();
 		
 		TransportClient client = new TransportClient(settings);
 		for (String host : transportAddress.split(",")) {
@@ -63,7 +68,7 @@ public class StatementExecutor {
 			ret.resultSet = rs;
 		} else {
 			try {
-				SearchResponse response = query(sql);
+				SearchResponse response = explain(sql).get();
 				ResultHandler handler = ResultHandlerFactory.create(response);
 				
 				ResultSet rs = new ResultSet();
@@ -109,12 +114,32 @@ public class StatementExecutor {
 		return ret;
 	}
 	
-	private SearchResponse query(String query) throws SqlParseException, SQLFeatureNotSupportedException, SQLFeatureNotSupportedException {
-		SearchRequestBuilder select = (SearchRequestBuilder)searchDao.explain(query);
+	public SearchRequestBuilder explain(String sql) throws SQLFeatureNotSupportedException, SqlParseException {
+		SearchRequestBuilder select = (SearchRequestBuilder)searchDao.explain(sql);
 		logger.debug(select);
-		return select.get();
+		return select;
 	}
 	
+	private String getClusterName(String[] addresses) {
+		String r = StringUtils.EMPTY;
+		for (String address : addresses) {
+			String cluster_name = getClusterName(address);
+			if (!StringUtils.isEmpty(address)) {
+				if (StringUtils.isEmpty(r)) {
+					r = cluster_name;
+				} else if (!StringUtils.equals(r, cluster_name)) {
+					throw new RuntimeException("Elasticsearch servers are not in same cluster!");
+				}
+			}
+		}
+		return r;
+	}
+
+	private String getClusterName(String address) {
+		Rest rest = new Rest();
+		JSONObject json = rest.get(String.format("http://%s/", address));
+		return json.getString("cluster_name");
+	}
 }
 //	if (StringUtils.containsIgnoreCase(sql, "SHOW VARIABLES")
 //	|| StringUtils.containsIgnoreCase(sql, "SELECT @@session.auto_increment_increment")

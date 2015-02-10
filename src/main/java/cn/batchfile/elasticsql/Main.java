@@ -41,8 +41,7 @@ public class Main {
         }
         
         // 启动web服务
-        String webapp = JMP.config.getProperty("webapp");
-        new HttpServer().start(Integer.parseInt(JMP.config.getProperty("http.port")), webapp);
+        new HttpServer().start();
     }
     
     private static void loadArguments(Properties properties, String[] args) {
