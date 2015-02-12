@@ -19,6 +19,7 @@ import com.github.mpjct.jmpjct.mysql.proto.Row;
 
 import cn.batchfile.elasticsql.elasticsearch.Result;
 import cn.batchfile.elasticsql.elasticsearch.StatementExecutor;
+import cn.batchfile.elasticsql.exceptions.ExecuteException;
 
 public class SqlServlet implements Servlet {
 	
@@ -38,27 +39,48 @@ public class SqlServlet implements Servlet {
 	public void service(ServletRequest request, ServletResponse response)
 			throws ServletException, IOException {
 		String sql = request.getParameter("sql");
-		Result result = statementExecutor.execute(sql);
-		if (result.resultSet == null) {
-			JSONObject object = new JSONObject();
-			object.put("affectedRows", result.affectedRows);
-			object.put("lastInsertId", result.lastInsertId);
-			object.put("warnings", result.warnings);
-			
-			responseJson(response, object);
-		} else {
-			JSONArray array = new JSONArray();
-			for (Row row : result.resultSet.rows) {
-				JSONObject object = new JSONObject();
-				List<Column> columns = result.resultSet.columns;
-				for (int i = 0; i < columns.size(); i ++) {
-					Column column = columns.get(i);
-					object.put(column.name, get(row.data, i));
+		
+		JSONObject r = new JSONObject();
+		r.put("resultSet", null);
+		r.put("ok", null);
+		r.put("error", null);
+		
+		try {
+			Result result = statementExecutor.execute(sql);
+			if (result.resultSet != null) {
+				JSONArray rs = new JSONArray();
+				for (Row row : result.resultSet.rows) {
+					JSONObject object = new JSONObject();
+					List<Column> columns = result.resultSet.columns;
+					for (int i = 0; i < columns.size(); i ++) {
+						Column column = columns.get(i);
+						object.put(column.name, get(row.data, i));
+					}
+					rs.add(object);
 				}
-				array.add(object);
+				r.put("resultSet", rs);
+			} else {
+				JSONObject ok = new JSONObject();
+				ok.put("affectedRows", result.affectedRows);
+				ok.put("lastInsertId", result.lastInsertId);
+				ok.put("warnings", result.warnings);
+				r.put("ok", ok);
 			}
-			responseJson(response, array);
+		} catch (ExecuteException e) {
+			JSONObject err = new JSONObject();
+			err.put("errorCode", e.getCode());
+			err.put("errorMessage", e.getMessage());
+			err.put("sqlState", e.getSqlState());
+			r.put("error", err);
+		} catch (Exception e) {
+			JSONObject err = new JSONObject();
+			err.put("errorCode", 1500);
+			err.put("errorMessage", e.getMessage());
+			err.put("sqlState", "HY000");
+			r.put("error", err);
 		}
+		
+		responseJson(response, r);
 	}
 	
 	private Object get(List<Object> list, int index) {

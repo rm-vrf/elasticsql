@@ -15,25 +15,37 @@
 					sql: $('#sql').val()
 				},
 				success: function(data){
-					var table = $('<table border=1>');
-					
-					var tableHeader = "<tr>";
-					for (var k in data[0]) 
-						tableHeader += "<th>" + k + "</th>";
-					tableHeader += "</tr>";
-					$(table).append(tableHeader);
-					
-					$.each(data, function (index, value) {
-						var tableRow = "<tr>";
-						$.each(value, function (key, val) {
-							tableRow += "<td>" + val + "</td>";
+					if (data.resultSet) {
+						var table = $('<table border=1>');
+						
+						var tableHeader = "<tr>";
+						for (var k in data.resultSet[0]) 
+							tableHeader += "<th>" + k + "</th>";
+						tableHeader += "</tr>";
+						$(table).append(tableHeader);
+						
+						$.each(data.resultSet, function (index, value) {
+							var tableRow = "<tr>";
+							$.each(value, function (key, val) {
+								tableRow += "<td>" + val + "</td>";
+							});
+							tableRow += "</tr>";
+							$(table).append(tableRow);
 						});
-						tableRow += "</tr>";
-						$(table).append(tableRow);
-					});
-					
-					$(table).append('</table>');
-					$('#table').html(table);
+						
+						$(table).append('</table>');
+						$('#table').html(table);
+					} else if (data.ok) {
+						var message = 'Affected Rows: ' + data.ok.affectedRows;
+						message += ", Last Insert Id: " + data.ok.lastInsertId;
+						message += ", Warnings: " + data.ok.warnings;
+						$('#table').html(message);
+					} else if (data.error) {
+						var message = 'Error Code: ' + data.error.errorCode;
+						message += ", Error Message: " + data.error.errorMessage;
+						message += ", Sql State: " + data.error.sqlState;
+						$('#table').html(message);
+					}
 				},
 				dataType: 'json'
 			});
