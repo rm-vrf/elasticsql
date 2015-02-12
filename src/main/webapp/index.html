@@ -1,6 +1,80 @@
-Schema | 
-Data Browser |
-SQL Query |
-Insert |
-Slow Query Log |
-Statistic
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+	<link rel="stylesheet" type="text/css" href="/static/css/main.css">
+	<script src="/static/js/jquery-1.11.2.min.js"></script>
+	<script>
+	window.onload = function(){
+		$("#execute").click(function(){
+			$.ajax({
+				type: "POST",
+				url: "/sql",
+				data : {
+					sql: $('#sql').val()
+				},
+				success: function(data){
+					var table = $('<table border=1>');
+					
+					var tableHeader = "<tr>";
+					for (var k in data[0]) 
+						tableHeader += "<th>" + k + "</th>";
+					tableHeader += "</tr>";
+					$(table).append(tableHeader);
+					
+					$.each(data, function (index, value) {
+						var tableRow = "<tr>";
+						$.each(value, function (key, val) {
+							tableRow += "<td>" + val + "</td>";
+						});
+						tableRow += "</tr>";
+						$(table).append(tableRow);
+					});
+					
+					$(table).append('</table>');
+					$('#table').html(table);
+				},
+				dataType: 'json'
+			});
+		});
+		
+		$("#explain").click(function(){
+			$.ajax({
+				type: "POST",
+				url: "/explain",
+				data : {
+					sql: $('#sql').val()
+				},
+				success: function(data){
+					var json = JSON.stringify(data);
+					$('#table').html(json);
+				},
+				dataType: 'json'
+			});
+		});
+	};
+	</script>
+</head>
+<body>
+<div id="navi">
+	Schema | 
+	Data Browser |
+	SQL Query |
+	Insert |
+	Slow Query Log |
+	Statistic
+</div>
+<div>
+	<textarea id="sql">SELECT * FROM testdb/account
+WHERE balance > 10000
+ORDER BY account_number
+LIMIT 10</textarea>
+</div>
+<div>
+	<input type="button" id="execute" value="Execute">
+	<input type="button" id="explain" value="Explain">
+</div>
+<div id="table"></div>
+</body>
+</html>
