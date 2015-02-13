@@ -35,14 +35,12 @@
 				<include>*.properties</include>
 			</includes>
 		</fileSet>
-		<!--
 		<fileSet>
 			<outputDirectory>/webapp</outputDirectory>
-			<directory>webapp</directory>
+			<directory>src/main/webapp</directory>
 			<excludes>
 				<exclude>.DS_Store</exclude>
 			</excludes>
 		</fileSet>
-		-->
 	</fileSets>
 </assembly>
